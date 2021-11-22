@@ -72,29 +72,58 @@ class DialogTodo extends GetView<DialogController> {
                           controller.todoCheck.value = newVal!;
                         })),
                   ),
-                  ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState?.validate() == true) {
-                          if (todo != null) {
-                            Get.find<HomeController>().updateTask(
-                              todo,
-                              title: tileTextController.text,
-                              description: descriptionTextController.text,
-                              tag: tagTextController.text,
-                              done: controller.todoCheck.value,
-                            );
-                          } else {
-                            Get.find<HomeController>().addTask(
-                              title: tileTextController.text,
-                              description: descriptionTextController.text,
-                              tag: tagTextController.text,
-                              done: controller.todoCheck.value,
-                            );
-                          }
-                          Get.close(0);
-                        }
-                      },
-                      child: const Text("Save"))
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState?.validate() == true) {
+                              if (todo != null) {
+                                Get.find<HomeController>().updateTask(
+                                  todo,
+                                  title: tileTextController.text,
+                                  description: descriptionTextController.text,
+                                  tag: tagTextController.text,
+                                  done: controller.todoCheck.value,
+                                );
+                              } else {
+                                Get.find<HomeController>().addTask(
+                                  title: tileTextController.text,
+                                  description: descriptionTextController.text,
+                                  tag: tagTextController.text,
+                                  done: controller.todoCheck.value,
+                                );
+                              }
+                              Get.close(0);
+                            }
+                          },
+                          child: const Text("Save")),
+                      Visibility(
+                        visible: (todo != null),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 18.0),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Get.defaultDialog(title: 'Delete task #${todo!.id}', content: const Text('Are you sure you want to delete this task?'), actions: [
+                                OutlinedButton(
+                                    onPressed: () {
+                                      Get.close(1);
+                                    },
+                                    child: const Text("NO!")),
+                                OutlinedButton(
+                                    onPressed: () async {
+                                      await Get.find<HomeController>().deleteTask(todo);
+                                      Get.close(2);
+                                    },
+                                    child: const Text("Sure, delete IT!")),
+                              ]);
+                            },
+                            child: const Text("Delete"),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
                 ],
               )),
         ),
